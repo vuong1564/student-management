@@ -33,7 +33,8 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody UserRequest userRequest) {
         try {
             String token = userService.login(userRequest.getUsername(), userRequest.getPassword());
-            return ResponseEntity.ok(new TokenResponse(token));
+            String role = jwtTokenUtil.getRoleFromToken(token);
+            return ResponseEntity.ok(new TokenResponse(token, role));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package org.example.studentmanagement.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.studentmanagement.model.User;
 import org.example.studentmanagement.repository.UserRepository;
 import org.example.studentmanagement.security.JwtTokenUtil;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
@@ -35,11 +37,11 @@ public class UserService {
                 return jwtTokenUtil.generateToken(username, user.get().getRole().name());
             }
             throw new RuntimeException("Invalid credentials");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
 
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            throw e;
+        }
     }
 
     public void changePassword(String username, String oldPassword, String newPassword) {
