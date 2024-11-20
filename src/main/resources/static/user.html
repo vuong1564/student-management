@@ -17,3 +17,23 @@
     <tbody id="book-list"></tbody>
   </table>
 </div>
+
+<!-- Liên kết tới file scripts.js -->
+<script src="scripts.js"></script>
+
+<!-- Thêm đoạn script xử lý riêng -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (!token || role !== 'USER') {
+      alert('Access denied! You are not authorized to view this page.');
+      window.location.href = '/login.html';
+      return;
+    }
+
+    // Gọi API để lấy danh sách sách (hoặc thực hiện xử lý riêng)
+    fetchBooks(); // Giả sử hàm fetchBooks được định nghĩa trong scripts.js
+  });
+</script>
