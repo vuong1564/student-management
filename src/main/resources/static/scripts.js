@@ -146,7 +146,7 @@ async function addOrUpdateBook(event) {
         await apiRequest(`${API_URL_ADMIN}/${editingBookId}`, 'PUT', book);
         editingBookId = null;
     } else {
-        await apiRequest(API_URL, 'POST', book);
+        await apiRequest(API_URL_ADMIN, 'POST', book);
     }
 
     document.getElementById('book-form').reset();
