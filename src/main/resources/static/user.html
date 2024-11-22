@@ -3,13 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User - View Books</title>
+  <title>User - Book Dashboard</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container">
-  <h2>Available Books</h2>
-  <div class="table-section">
+  <div class="header">
+    <h2>User Dashboard</h2>
+    <button id="logout-button">Logout</button>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab-button" onclick="showTab('available-books')">Available Books</button>
+    <button class="tab-button" onclick="showTab('borrowed-books')">Borrowed Books</button>
+  </div>
+
+  <!-- Available Books Tab -->
+  <div class="tab-content" id="available-books">
+    <h3>Available Books</h3>
     <table id="books-table">
       <thead>
       <tr>
@@ -24,13 +36,27 @@
       <tbody id="book-list"></tbody>
     </table>
   </div>
+
+  <!-- Borrowed Books Tab -->
+  <div class="tab-content" id="borrowed-books" style="display: none;">
+    <h3>Borrowed Books</h3>
+    <table id="borrowed-books-table">
+      <thead>
+      <tr>
+        <th>Book Title</th>
+        <th>Borrow Date</th>
+        <th>Return Date</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody id="borrowed-book-list"></tbody>
+    </table>
+  </div>
 </div>
 <script src="scripts.js"></script>
 </body>
 </html>
 
-
-<script src="scripts.js"></script>
 
 
 <script>
@@ -47,4 +73,71 @@
     // Gọi API để lấy danh sách sách (hoặc thực hiện xử lý riêng)
     fetchBooks(); // Giả sử hàm fetchBooks được định nghĩa trong scripts.js
   });
+</script>
+
+<script>
+  // Function to show and hide tabs
+  function showTab(tabId) {
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+      tab.style.display = tab.id === tabId ? 'block' : 'none';
+    });
+  }
+
+  // Fetch and display available books for User
+  async function fetchBooksForUser() {
+    const API_URL = '/user/books'; // API chỉ dành cho User
+    const response = await apiRequest(API_URL, 'GET');
+    const bookList = document.getElementById('book-list');
+    bookList.innerHTML = '';
+
+    response.forEach(book => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.publishedYear || ''}</td>
+            <td>${book.price ? `$${book.price.toFixed(2)}` : ''}</td>
+            <td>${book.quantity}</td>
+        `;
+      bookList.appendChild(row);
+    });
+  }
+
+  // Fetch and display borrowed books for User
+  async function fetchBorrowedBooks(userId) {
+    const API_URL = `/user/borrowed-books?userId=${userId}`;
+    const response = await apiRequest(API_URL, 'GET');
+    const borrowedBookList = document.getElementById('borrowed-book-list');
+    borrowedBookList.innerHTML = '';
+
+    response.forEach(borrowedBook => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+            <td>${borrowedBook.book.title}</td>
+            <td>${borrowedBook.book.author}</td>
+            <td>${borrowedBook.borrowedAt}</td>
+            <td>${borrowedBook.returnedAt || ''}</td>
+        `;
+      borrowedBookList.appendChild(row);
+    });
+  }
+
+  // Initialize User Page
+  document.addEventListener('DOMContentLoaded', () => {
+    const role = localStorage.getItem('role');
+    const userId = localStorage.getItem('userId'); // Assume userId is stored in LocalStorage after login
+
+    if (role !== 'USER') {
+      alert('Access denied! You are not authorized to view this page.');
+      window.location.href = '/login.html';
+      return;
+    }
+
+    fetchBooksForUser(); // Lấy danh sách sách có sẵn
+    fetchBorrowedBooks(userId); // Lấy danh sách sách đã mượn
+  });
+
+
 </script>

@@ -198,9 +198,5 @@ async function apiRequest(url, method = 'GET', body = null) {
     return response.json();
 }
 
-// // Initialize
-// document.addEventListener('DOMContentLoaded', () => {
-//     fetchBooks();
-// });
 
 

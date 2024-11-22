@@ -74,6 +74,76 @@
     fetchBooks();
   });
 
+  const API_URL_ADMIN = '/admin/books';
+  let editingBookId = null;
+
+  // Fetch and display books
+  async function fetchBooks() {
+    const response = await apiRequest(API_URL_ADMIN, 'GET');
+    const bookList = document.getElementById('book-list');
+    bookList.innerHTML = '';
+
+    response.forEach(book => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.publishedYear || ''}</td>
+            <td>${book.price ? `$${book.price.toFixed(2)}` : ''}</td>
+            <td>${book.quantity}</td>
+            <td>
+                <button onclick="editBook(${book.id}, '${book.title}', '${book.author}', ${book.publishedYear}, ${book.price}, ${book.quantity})">Edit</button>
+                <button onclick="deleteBook(${book.id})">Delete</button>
+            </td>
+        `;
+      bookList.appendChild(row);
+    });
+  }
+
+  // Add or update book
+  async function addOrUpdateBook(event) {
+    event.preventDefault();
+    const book = {
+      title: document.getElementById('book-title').value,
+      author: document.getElementById('book-author').value,
+      publishedYear: parseInt(document.getElementById('book-year').value, 10) || null,
+      price: parseFloat(document.getElementById('book-price').value) || null,
+      quantity: parseInt(document.getElementById('book-quantity').value, 10),
+    };
+
+    if (editingBookId) {
+      await apiRequest(`${API_URL_ADMIN}/${editingBookId}`, 'PUT', book);
+      editingBookId = null;
+    } else {
+      await apiRequest(API_URL_ADMIN, 'POST', book);
+    }
+
+    document.getElementById('book-form').reset();
+    fetchBooks();
+  }
+
+  // Delete book
+  async function deleteBook(id) {
+    await apiRequest(`${API_URL_ADMIN}/${id}`, 'DELETE');
+    fetchBooks();
+  }
+
+  // Edit book
+  function editBook(id, title, author, year, price, quantity) {
+    editingBookId = id;
+    document.getElementById('book-title').value = title;
+    document.getElementById('book-author').value = author;
+    document.getElementById('book-year').value = year || '';
+    document.getElementById('book-price').value = price || '';
+    document.getElementById('book-quantity').value = quantity;
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+      fetchBooks();
+  });
+
 </script>
 </body>
 </html>
