@@ -44,7 +44,7 @@ async function handleRegister(event) {
     const password = document.getElementById('register-password').value;
 
     try {
-        const response = await fetch(`${API_URL}/register`, {
+        const response = await fetch(`${API_AUTH_URL}/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -68,7 +68,7 @@ async function handleChangePassword(event) {
     const newPassword = document.getElementById('new-password').value;
 
     try {
-        const response = await fetch(`${API_URL}/change-password`, {
+        const response = await fetch(`${API_AUTH_URL}/change-password`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, oldPassword, newPassword })
