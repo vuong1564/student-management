@@ -21,8 +21,17 @@ public class Books {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "author", nullable = false)
-    private String author;
+    @Transient
+    private Integer authorId;
+
+    @Column(name = "author_name")
+    private String authorName;
+
+    @Transient
+    private Integer categoryId;
+
+    @Column(name = "category_name")
+    private String categoryName;
 
     @Column(name = "published_year")
     private Integer publishedYear;

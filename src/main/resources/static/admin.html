@@ -1,88 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Manage Books</title>
-  <button id="logout-button">Logout</button>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container">
-  <h2>Manage Books</h2>
+    <div class="header">
+        <h2>Admin Dashboard</h2>
+        <button id="logout-button">Logout</button>
+    </div>
 
-  <!-- Form thêm/sửa sách -->
-  <div class="form-section">
-    <form id="book-form" onsubmit="addOrUpdateBook(event)">
-      <input type="hidden" id="book-id">
-      <div>
-        <label for="book-title">Title</label>
-        <input type="text" id="book-title" placeholder="Book Title" required>
-      </div>
-      <div>
-        <label for="book-author">Author</label>
-        <input type="text" id="book-author" placeholder="Author" required>
-      </div>
-      <div>
-        <label for="book-year">Published Year</label>
-        <input type="number" id="book-year" placeholder="Year">
-      </div>
-      <div>
-        <label for="book-price">Price</label>
-        <input type="number" id="book-price" step="0.01" placeholder="Price">
-      </div>
-      <div>
-        <label for="book-quantity">Quantity</label>
-        <input type="number" id="book-quantity" placeholder="Quantity" required>
-      </div>
-      <button type="submit">Save Book</button>
-    </form>
-  </div>
+    <div class="tabs">
+        <button class="tab-button active" onclick="showTab('manage-books')">Manage Books</button>
+        <button class="tab-button" onclick="showTab('manage-authors')">Manage Authors</button>
+        <button class="tab-button" onclick="showTab('manage-categories')">Manage Categories</button>
+        <button class="tab-button" onclick="showTab('manage-borrowers')">Manage Borrowers</button>
+        <button class="tab-button" onclick="showTab('personal-info')">Personal Info</button>
+        <button class="tab-button" onclick="showTab('change-password')">Change Password</button>
+    </div>
 
-  <!-- Bảng danh sách sách -->
-  <div class="table-section">
-    <h3>Book List</h3>
-    <table id="books-table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Year</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody id="book-list"></tbody>
-    </table>
-  </div>
+    <!-- Tab: Manage Books -->
+    <div class="tab-content active" id="manage-books">
+        <h3>Manage Books</h3>
+        <!-- Button to open the Add/Edit Book Modal -->
+        <button class="modal-button" onclick="openModal('book-modal')">Add Book</button>
+
+        <!-- Table to display list of books -->
+        <table id="books-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Published Year</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="book-list">
+            <!-- Rows populated dynamically via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Adding/Editing Book -->
+    <div class="modal" id="book-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('book-modal')">&times;</span>
+            <h3 id="book-modal-title">Add Book</h3>
+            <form id="book-form" onsubmit="addOrEditBook(event)">
+                <!-- Hidden field to store book ID -->
+                <input type="hidden" id="book-id">
+
+                <!-- Title -->
+                <div>
+                    <label for="book-title">Title</label>
+                    <input type="text" id="book-title" placeholder="Book Title" required>
+                </div>
+
+                <!-- Author Dropdown -->
+                <div>
+                    <label for="book-author">Author</label>
+                    <select id="book-author" required>
+                        <option value="null" selected>None</option>
+                        <!-- Authors populated dynamically via JavaScript -->
+                    </select>
+                </div>
+
+                <!-- Category Dropdown -->
+                <div>
+                    <label for="book-category">Category</label>
+                    <select id="book-category" required>
+                        <option value="null" selected>None</option>
+                        <!-- Categories populated dynamically via JavaScript -->
+                    </select>
+                </div>
+
+                <!-- Published Year -->
+                <div>
+                    <label for="book-year">Published Year</label>
+                    <input type="number" id="book-year" placeholder="Year">
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label for="book-price">Price</label>
+                    <input type="number" id="book-price" step="0.01" placeholder="Price">
+                </div>
+
+                <!-- Quantity -->
+                <div>
+                    <label for="book-quantity">Quantity</label>
+                    <input type="number" id="book-quantity" placeholder="Quantity" required>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit">Save Book</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Tab: Manage Authors -->
+    <div class="tab-content" id="manage-authors" style="display: none;">
+        <h3>Manage Authors</h3>
+        <button class="modal-button" onclick="openModal('author-modal')">Add/Edit Author</button>
+        <table id="authors-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="author-list"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal: Add/Edit Author -->
+    <div class="modal" id="author-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('author-modal')">&times;</span>
+            <h3>Add/Edit Author</h3>
+            <form id="author-form" onsubmit="addOrEditAuthor(event)">
+                <input type="hidden" id="author-id">
+                <div>
+                    <label for="author-name">Name</label>
+                    <input type="text" id="author-name" placeholder="Author Name" required>
+                </div>
+                <button type="submit">Save Author</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tab: Manage Categories -->
+    <div class="tab-content" id="manage-categories" style="display: none;">
+        <h3>Manage Categories</h3>
+        <button class="modal-button" onclick="openModal('category-modal')">Add/Edit Category</button>
+        <table id="categories-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="category-list"></tbody>
+        </table>
+    </div>
+
+    <!-- Modal: Add/Edit Category -->
+    <div class="modal" id="category-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('category-modal')">&times;</span>
+            <h3>Add/Edit Category</h3>
+            <form id="category-form" onsubmit="addOrEditCategory(event)">
+                <input type="hidden" id="category-id">
+                <div>
+                    <label for="category-name">Category</label>
+                    <input type="text" id="category-name" placeholder="Category Name" required>
+                </div>
+                <button type="submit">Save Category</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tab: Manage Borrowers -->
+    <div class="tab-content" id="manage-borrowers" style="display: none;">
+        <h3>Manage Borrowers</h3>
+        <table id="borrowers-table">
+            <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Name</th>
+                <th>Book Title</th>
+                <th>Borrow Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody id="borrowers-list"></tbody>
+        </table>
+    </div>
+
+    <!-- Tab: Personal Info -->
+    <div class="tab-content" id="personal-info" style="display: none;">
+        <h3>Personal Info</h3>
+        <form id="personal-info-form">
+            <div>
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" placeholder="Your Full Name" required>
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Your Email" required>
+            </div>
+            <div>
+                <label for="address">Address</label>
+                <input type="text" id="address" placeholder="Your Address">
+            </div>
+            <button type="button" onclick="updatePersonalInfo()">Save Info</button>
+        </form>
+    </div>
+
+    <!-- Tab: Change Password -->
+    <div class="tab-content" id="change-password" style="display: none;">
+        <h3>Change Password</h3>
+        <form id="change-password-form" onsubmit="changePassword(event)">
+            <div>
+                <label for="old-password">Old Password</label>
+                <input type="password" id="old-password" placeholder="Old Password" required>
+            </div>
+            <div>
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="New Password" required>
+            </div>
+            <button type="submit">Change Password</button>
+        </form>
+    </div>
 </div>
 <script src="scripts.js"></script>
+</body>
+</html>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
 
-    if (!token || role !== 'ADMIN') {
-      alert('Access denied! You are not authorized to view this page.');
-      window.location.href = '/login.html';
-      return;
-    }
+        if (!token || role !== 'ADMIN') {
+            alert('Access denied! You are not authorized to view this page.');
+            window.location.href = '/login.html';
+            return;
+        }
 
-    // Gọi API để lấy danh sách sách
-    fetchBooks();
-  });
+        reloadCurrentTab();
+    });
 
 </script>
 <script>
-
-  const API_URL_ADMIN = '/admin/books';
-  let editingBookId = null;
-
-  // Fetch and display books
   async function fetchBooks() {
-    const response = await apiRequest(API_URL_ADMIN, 'GET');
+    const API_URL = '/admin/books';
+    const response = await apiRequest(API_URL, 'GET');
     const bookList = document.getElementById('book-list');
     bookList.innerHTML = '';
 
@@ -91,12 +254,13 @@
       row.innerHTML = `
             <td>${book.id}</td>
             <td>${book.title}</td>
-            <td>${book.author}</td>
+            <td>${book.authorName}</td>
+            <td>${book.categoryName}</td>
             <td>${book.publishedYear || ''}</td>
             <td>${book.price ? `$${book.price.toFixed(2)}` : ''}</td>
             <td>${book.quantity}</td>
             <td>
-                <button onclick="editBook(${book.id}, '${book.title}', '${book.author}', ${book.publishedYear}, ${book.price}, ${book.quantity})">Edit</button>
+                <button onclick="editBook(${book.id}, '${book.title}', '${book.authorName}', '${book.categoryName}', ${book.publishedYear}, ${book.price}, ${book.quantity})">Edit</button>
                 <button onclick="deleteBook(${book.id})">Delete</button>
             </td>
         `;
@@ -104,49 +268,219 @@
     });
   }
 
-  // Add or update book
-  async function addOrUpdateBook(event) {
+  async function addOrEditBook(event) {
     event.preventDefault();
+    const bookId = document.getElementById('book-id').value;
     const book = {
       title: document.getElementById('book-title').value,
-      author: document.getElementById('book-author').value,
+      authorId: document.getElementById('book-author').value,
+      categoryId: document.getElementById('book-category').value,
       publishedYear: parseInt(document.getElementById('book-year').value, 10) || null,
       price: parseFloat(document.getElementById('book-price').value) || null,
       quantity: parseInt(document.getElementById('book-quantity').value, 10),
     };
 
-    if (editingBookId) {
-      await apiRequest(`${API_URL_ADMIN}/${editingBookId}`, 'PUT', book);
-      editingBookId = null;
-    } else {
-      await apiRequest(API_URL_ADMIN, 'POST', book);
-    }
+    const API_URL = bookId ? `/admin/books/${bookId}` : '/admin/books';
+    const method = bookId ? 'PUT' : 'POST';
+    await apiRequest(API_URL, method, book);
 
-    document.getElementById('book-form').reset();
-    fetchBooks();
+    closeModal('book-modal');
+    reloadCurrentTab('manage-books');
   }
 
-  // Delete book
-  async function deleteBook(id) {
-    await apiRequest(`${API_URL_ADMIN}/${id}`, 'DELETE');
-    fetchBooks();
-  }
-
-  // Edit book
-  function editBook(id, title, author, year, price, quantity) {
-    editingBookId = id;
+  function editBook(id, title, authorName, categoryName, year, price, quantity) {
+    document.getElementById('book-id').value = id;
     document.getElementById('book-title').value = title;
-    document.getElementById('book-author').value = author;
+    document.getElementById('book-author').value = authorName;
+    document.getElementById('book-category').value = categoryName;
     document.getElementById('book-year').value = year || '';
     document.getElementById('book-price').value = price || '';
     document.getElementById('book-quantity').value = quantity;
+    openModal('book-modal');
+
+    // Load dropdown options và chọn giá trị mặc định
+    fetchDropdownOptions().then(() => {
+      const authorSelect = document.getElementById('book-author');
+      const categorySelect = document.getElementById('book-category');
+
+      // Gán giá trị mặc định cho Author và Category
+      if (authorName) {
+        authorSelect.value = authorName;
+      }
+
+      if (categoryName) {
+        categorySelect.value = categoryName;
+      }
+    });
   }
 
-  // Initialize
-  document.addEventListener('DOMContentLoaded', () => {
-      fetchBooks();
-  });
+    // Delete a book
+    async function deleteBook(id) {
+        const API_URL = `/admin/books/${id}`;
+        try {
+            if (confirm('Are you sure you want to delete this book?')) {
+                await apiRequest(API_URL, 'DELETE'); // DELETE /admin/books/{id}
+                fetchBooks(); // Reload the book list
+            }
+        } catch (error) {
+            console.error('Error deleting book:', error);
+            alert('Failed to delete book.');
+        }
+    }
+
+
+    // Fetch Dropdown Options for Book Modal
+    async function fetchDropdownOptions() {
+        try {
+            const authorsResponse = await apiRequest('/admin/authors', 'GET');
+            const categoriesResponse = await apiRequest('/admin/categories', 'GET');
+
+            const authorSelect = document.getElementById('book-author');
+            const categorySelect = document.getElementById('book-category');
+
+            // Clear previous options
+            authorSelect.innerHTML = '<option value="" disabled selected>Select an Author</option>';
+            categorySelect.innerHTML = '<option value="" disabled selected>Select a Category</option>';
+
+            // Add "None" option for author
+            const noneAuthorOption = document.createElement('option');
+            noneAuthorOption.value = 'null';
+            noneAuthorOption.textContent = 'None';
+            authorSelect.appendChild(noneAuthorOption);
+
+            // Populate authors
+            authorsResponse.forEach(author => {
+                const option = document.createElement('option');
+                option.value = author.id;
+                option.textContent = author.name;
+                authorSelect.appendChild(option);
+            });
+
+            // Add "None" option for category
+            const noneCategoryOption = document.createElement('option');
+            noneCategoryOption.value = 'null';
+            noneCategoryOption.textContent = 'None';
+            categorySelect.appendChild(noneCategoryOption);
+
+            // Populate categories
+            categoriesResponse.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching dropdown options:', error);
+            alert('Failed to load dropdown options.');
+        }
+    }
+
 
 </script>
-</body>
-</html>
+
+<script>
+    // Fetch authors
+    async function fetchAuthors() {
+        const API_URL = '/admin/authors';
+        const response = await apiRequest(API_URL, 'GET');
+        const authorList = document.getElementById('author-list');
+        authorList.innerHTML = '';
+
+        response.forEach(author => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${author.id}</td>
+            <td>${author.name}</td>
+            <td>
+                <button onclick="editAuthor(${author.id}, '${author.name}')">Edit</button>
+                <button onclick="deleteAuthor(${author.id})">Delete</button>
+            </td>
+        `;
+            authorList.appendChild(row);
+        });
+    }
+
+    // Add or Edit Author
+    async function addOrEditAuthor(event) {
+        event.preventDefault();
+        const authorId = document.getElementById('author-id').value;
+        const author = {id: authorId ? parseInt(authorId) : null, name: document.getElementById('author-name').value};
+
+        const API_URL = '/admin/authors';
+        await apiRequest(API_URL, 'POST', author);
+
+        // Close modal and reload tab
+        closeModal('author-modal');
+        reloadCurrentTab('manage-authors');
+    }
+
+    // Delete author
+    async function deleteAuthor(id) {
+        const API_URL = `/admin/authors/${id}`;
+        await apiRequest(API_URL, 'DELETE');
+        reloadCurrentTab('manage-authors');
+    }
+
+    // Populate author form for editing
+    function editAuthor(id, name) {
+        document.getElementById('author-id').value = id;
+        document.getElementById('author-name').value = name;
+        openModal('author-modal');
+    }
+
+</script>
+
+<script>
+    // Fetch categories
+    async function fetchCategories() {
+        const API_URL = '/admin/categories';
+        const response = await apiRequest(API_URL, 'GET');
+        const categoryList = document.getElementById('category-list');
+        categoryList.innerHTML = '';
+
+        response.forEach(category => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${category.id}</td>
+            <td>${category.name}</td>
+            <td>
+                <button onclick="editCategory(${category.id}, '${category.name}')">Edit</button>
+                <button onclick="deleteCategory(${category.id})">Delete</button>
+            </td>
+        `;
+            categoryList.appendChild(row);
+        });
+    }
+
+    // Add or Edit Category
+    async function addOrEditCategory(event) {
+        event.preventDefault();
+        const categoryId = document.getElementById('category-id').value;
+        const category = {
+            id: categoryId ? parseInt(categoryId) : null,
+            name: document.getElementById('category-name').value
+        };
+
+        const API_URL = '/admin/categories';
+        await apiRequest(API_URL, 'POST', category);
+
+        // Close modal and reload tab
+        closeModal('category-modal');
+        reloadCurrentTab('manage-categories');
+    }
+
+    // Delete category
+    async function deleteCategory(id) {
+        const API_URL = `/admin/categories/${id}`;
+        await apiRequest(API_URL, 'DELETE');
+        reloadCurrentTab('manage-categories');
+    }
+
+    // Populate category form for editing
+    function editCategory(id, name) {
+        document.getElementById('category-id').value = id;
+        document.getElementById('category-name').value = name;
+        openModal('category-modal');
+    }
+
+</script>

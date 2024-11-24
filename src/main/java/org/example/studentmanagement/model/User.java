@@ -23,6 +23,15 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "full_name", nullable = false)
+    private String fullName; // Họ tên
+
+    @Column(name = "email", nullable = false)
+    private String email; // Email
+
+    @Column(name = "address")
+    private String address; // Địa chỉ
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;

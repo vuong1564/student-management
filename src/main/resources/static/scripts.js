@@ -61,29 +61,35 @@ async function handleRegister(event) {
     }
 }
 
-async function handleChangePassword(event) {
+const API_PERSON_URL = '/api/auth';
+
+async function changePassword(event) {
     event.preventDefault();
-    const username = document.getElementById('change-username').value;
+    const API_URL = '/api/user/change-password';
     const oldPassword = document.getElementById('old-password').value;
     const newPassword = document.getElementById('new-password').value;
 
-    try {
-        const response = await fetch(`${API_AUTH_URL}/change-password`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, oldPassword, newPassword })
-        });
-
-        if (response.ok) {
-            alert('Password changed successfully');
-            window.location.href = 'login.html';
-        } else {
-            alert('Change password failed');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
+    const response = await apiRequest(API_URL, 'POST', { oldPassword, newPassword });
+    alert('Password changed successfully!');
 }
+
+async function updatePersonalInfo() {
+    const API_URL = '/user/personal-info';
+    const fullName = document.getElementById('full-name').value;
+    const email = document.getElementById('email').value;
+    const address = document.getElementById('address').value;
+
+    const response = await apiRequest(API_URL, 'PUT', { fullName, email, address });
+    alert('Personal info updated successfully!');
+}
+
+// Gắn sự kiện cho nút Logout
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', handleLogout);
+    }
+});
 
 // Logout logic
 function handleLogout() {
@@ -95,79 +101,9 @@ function handleLogout() {
     window.location.href = '/login.html';
 }
 
-// Gắn sự kiện cho nút Logout
-document.addEventListener('DOMContentLoaded', () => {
-    const logoutButton = document.getElementById('logout-button');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', handleLogout);
-    }
-});
-
 
 const API_URL_ADMIN = '/admin/books';
 let editingBookId = null;
-
-// Fetch and display books
-async function fetchBooks() {
-    const response = await apiRequest(API_URL_ADMIN, 'GET');
-    const bookList = document.getElementById('book-list');
-    bookList.innerHTML = '';
-
-    response.forEach(book => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${book.id}</td>
-            <td>${book.title}</td>
-            <td>${book.author}</td>
-            <td>${book.publishedYear || ''}</td>
-            <td>${book.price ? `$${book.price.toFixed(2)}` : ''}</td>
-            <td>${book.quantity}</td>
-            <td>
-                <button onclick="editBook(${book.id}, '${book.title}', '${book.author}', ${book.publishedYear}, ${book.price}, ${book.quantity})">Edit</button>
-                <button onclick="deleteBook(${book.id})">Delete</button>
-            </td>
-        `;
-        bookList.appendChild(row);
-    });
-}
-
-// Add or update book
-async function addOrUpdateBook(event) {
-    event.preventDefault();
-    const book = {
-        title: document.getElementById('book-title').value,
-        author: document.getElementById('book-author').value,
-        publishedYear: parseInt(document.getElementById('book-year').value, 10) || null,
-        price: parseFloat(document.getElementById('book-price').value) || null,
-        quantity: parseInt(document.getElementById('book-quantity').value, 10),
-    };
-
-    if (editingBookId) {
-        await apiRequest(`${API_URL_ADMIN}/${editingBookId}`, 'PUT', book);
-        editingBookId = null;
-    } else {
-        await apiRequest(API_URL_ADMIN, 'POST', book);
-    }
-
-    document.getElementById('book-form').reset();
-    fetchBooks();
-}
-
-// Delete book
-async function deleteBook(id) {
-    await apiRequest(`${API_URL_ADMIN}/${id}`, 'DELETE');
-    fetchBooks();
-}
-
-// Edit book
-function editBook(id, title, author, year, price, quantity) {
-    editingBookId = id;
-    document.getElementById('book-title').value = title;
-    document.getElementById('book-author').value = author;
-    document.getElementById('book-year').value = year || '';
-    document.getElementById('book-price').value = price || '';
-    document.getElementById('book-quantity').value = quantity;
-}
 
 // API Helper function
 async function apiRequest(url, method = 'GET', body = null) {
@@ -198,5 +134,57 @@ async function apiRequest(url, method = 'GET', body = null) {
     return response.json();
 }
 
+// Show the selected tab and reload its data
+function showTab(tabId) {
+    // Ẩn tất cả các nội dung tab
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+        if (tab.id === tabId) {
+            tab.style.display = 'block'; // Hiển thị tab được chọn
+        } else {
+            tab.style.display = 'none'; // Ẩn các tab khác
+        }
+    });
 
+    // Loại bỏ lớp "active" trên tất cả các nút tab
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
 
+    // Thêm lớp "active" vào nút tab hiện tại
+    const currentButton = document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`);
+    if (currentButton) {
+        currentButton.classList.add('active');
+    }
+
+    // Reload dữ liệu cho tab được chọn
+    reloadCurrentTab(tabId);
+}
+
+// Reload current tab's data
+function reloadCurrentTab(tabId) {
+    if (tabId === 'manage-books') fetchBooks();
+    if (tabId === 'manage-authors') fetchAuthors();
+    if (tabId === 'manage-categories') fetchCategories();
+    if (tabId === 'manage-borrowers') fetchBorrowers();
+}
+
+// Open modal
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+
+    // Load dropdown options if it's the Book modal
+    if (modalId === 'book-modal') {
+        fetchDropdownOptions();
+    }
+}
+
+// Close modal
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+
+    // Reset form when modal is closed
+    const form = document.querySelector(`#${modalId} form`);
+    if (form) form.reset();
+}

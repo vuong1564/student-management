@@ -2,6 +2,8 @@ package org.example.studentmanagement.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.studentmanagement.dto.ChangePasswordRequest;
+import org.example.studentmanagement.dto.UpdatePersonalInfoDTO;
 import org.example.studentmanagement.model.User;
 import org.example.studentmanagement.repository.UserRepository;
 import org.example.studentmanagement.security.JwtTokenUtil;
@@ -44,13 +46,39 @@ public class UserService {
         }
     }
 
-    public void changePassword(String username, String oldPassword, String newPassword) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+    // Change Password
+    public void changePassword(Integer userId, ChangePasswordRequest dto) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = optionalUser.get();
+
+        // Validate old password
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
             throw new RuntimeException("Old password is incorrect");
         }
-        user.setPassword(passwordEncoder.encode(newPassword));
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        user.setUpdatedAt(java.time.Instant.now());
         userRepository.save(user);
+    }
+
+    public User updatePersonalInfo(Integer userId, UpdatePersonalInfoDTO dto) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = optionalUser.get();
+
+        user.setFullName(dto.getFullName());
+        user.setEmail(dto.getEmail());
+        user.setAddress(dto.getAddress());
+
+        user.setUpdatedAt(java.time.Instant.now());
+        return userRepository.save(user);
     }
 }

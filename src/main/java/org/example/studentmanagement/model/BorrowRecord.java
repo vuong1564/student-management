@@ -24,7 +24,7 @@ public class BorrowRecord {
     @JoinColumn(name = "book_id", nullable = false)
     private Books book;
 
-    @Column(name = "borrow_date", nullable = false)
+    @Column(name = "borrow_date")
     private LocalDate borrowDate;
 
     @Column(name = "return_date")
