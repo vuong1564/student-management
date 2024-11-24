@@ -1,5 +1,6 @@
 package org.example.studentmanagement.controller;
 
+import org.example.studentmanagement.dto.BookDTO;
 import org.example.studentmanagement.dto.ChangePasswordRequest;
 import org.example.studentmanagement.dto.UpdatePersonalInfoDTO;
 import org.example.studentmanagement.model.Books;
@@ -52,5 +53,11 @@ public class UserController {
     private Integer getUserIdFromAuthentication(Authentication authentication) {
         // Assuming the principal stores the user's ID
         return (Integer) authentication.getPrincipal();
+    }
+
+    @GetMapping("/available-books")
+    public ResponseEntity<List<BookDTO>> getAvailableBooks() {
+        List<BookDTO> availableBooks = booksService.getAvailableBooks();
+        return ResponseEntity.ok(availableBooks);
     }
 }

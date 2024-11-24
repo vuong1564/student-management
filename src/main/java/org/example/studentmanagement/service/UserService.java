@@ -3,6 +3,7 @@ package org.example.studentmanagement.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.studentmanagement.dto.ChangePasswordRequest;
+import org.example.studentmanagement.dto.TokenResponse;
 import org.example.studentmanagement.dto.UpdatePersonalInfoDTO;
 import org.example.studentmanagement.dto.UserRequest;
 import org.example.studentmanagement.model.User;
@@ -38,11 +39,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public String login(String username, String password) {
+    public TokenResponse login(String username, String password) {
         try {
             Optional<User> user = userRepository.findByUsername(username);
             if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-                return jwtTokenUtil.generateToken(username, user.get().getRole().name());
+                String token = jwtTokenUtil.generateToken(username, user.get().getRole().name());
+                String role = jwtTokenUtil.getRoleFromToken(token);
+                Integer userId = user.get().getId();
+                return new TokenResponse(token, role, userId);
             }
             throw new RuntimeException("Invalid credentials");
 

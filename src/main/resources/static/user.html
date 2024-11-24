@@ -3,134 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User - Book Dashboard</title>
+  <title>User Dashboard</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <h2>User Dashboard</h2>
-    <button id="logout-button">Logout</button>
-  </div>
+  <h1>Welcome, User</h1>
+  <div class="tab-container">
+    <!-- Tab Buttons -->
+    <div class="tab-buttons">
+      <button class="tab-button active" onclick="showTabUser('available-books')">Available Books</button>
+      <button class="tab-button" onclick="showTabUser('borrowed-books')">Borrowed Books</button>
+    </div>
 
-  <!-- Tab Navigation -->
-  <div class="tabs">
-    <button class="tab-button" onclick="showTab('available-books')">Available Books</button>
-    <button class="tab-button" onclick="showTab('borrowed-books')">Borrowed Books</button>
-  </div>
+    <!-- Tab Content -->
+    <div class="tab-content" id="available-books">
+      <h3>Books Available to Borrow</h3>
+      <table id="available-books-table">
+        <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Category</th>
+          <th>Published Year</th>
+          <th>Price</th>
+          <th>Available Quantity</th>
+        </tr>
+        </thead>
+        <tbody id="available-books-list">
+        <!-- Rows populated dynamically -->
+        </tbody>
+      </table>
+    </div>
 
-  <!-- Available Books Tab -->
-  <div class="tab-content" id="available-books">
-    <h3>Available Books</h3>
-    <table id="books-table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Year</th>
-        <th>Price</th>
-        <th>Quantity</th>
-      </tr>
-      </thead>
-      <tbody id="book-list"></tbody>
-    </table>
-  </div>
-
-  <!-- Borrowed Books Tab -->
-  <div class="tab-content" id="borrowed-books" style="display: none;">
-    <h3>Borrowed Books</h3>
-    <table id="borrowed-books-table">
-      <thead>
-      <tr>
-        <th>Book Title</th>
-        <th>Borrow Date</th>
-        <th>Return Date</th>
-        <th>Status</th>
-      </tr>
-      </thead>
-      <tbody id="borrowed-book-list"></tbody>
-    </table>
+    <div class="tab-content" id="borrowed-books" style="display: none;">
+      <h3>Your Borrowed Books</h3>
+      <table id="borrowed-books-table">
+        <thead>
+        <tr>
+          <th>Title</th>
+          <th>Borrow Date</th>
+          <th>Return Date</th>
+        </tr>
+        </thead>
+        <tbody id="borrowed-books-list">
+        <!-- Rows populated dynamically -->
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
+
 <script src="scripts.js"></script>
 </body>
 </html>
 
-
-
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
+  // Show Tab Logic
+  function showTabUser(tabId) {
+    // Ẩn tất cả các nội dung tab
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+      if (tab.id === tabId) {
+        tab.style.display = 'block'; // Hiển thị tab được chọn
+      } else {
+        tab.style.display = 'none'; // Ẩn các tab khác
+      }
+    });
 
-    if (!token || role !== 'USER') {
-      alert('Access denied! You are not authorized to view this page.');
-      window.location.href = '/login.html';
-      return;
+    // Loại bỏ lớp "active" trên tất cả các nút tab
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+      button.classList.remove('active');
+    });
+
+    // Thêm lớp "active" vào nút tab hiện tại
+    const currentButton = document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`);
+    if (currentButton) {
+      currentButton.classList.add('active');
     }
 
-    // Gọi API để lấy danh sách sách (hoặc thực hiện xử lý riêng)
-    fetchBooks(); // Giả sử hàm fetchBooks được định nghĩa trong scripts.js
-  });
-</script>
-
-<script>
-
-  // Fetch and display available books for User
-  async function fetchBooksForUser() {
-    const API_URL = '/user/books'; // API chỉ dành cho User
-    const response = await apiRequest(API_URL, 'GET');
-    const bookList = document.getElementById('book-list');
-    bookList.innerHTML = '';
-
-    response.forEach(book => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-            <td>${book.id}</td>
-            <td>${book.title}</td>
-            <td>${book.author}</td>
-            <td>${book.publishedYear || ''}</td>
-            <td>${book.price ? `$${book.price.toFixed(2)}` : ''}</td>
-            <td>${book.quantity}</td>
-        `;
-      bookList.appendChild(row);
-    });
+    reloadCurrentTabUser(tabId);
   }
 
-  // Fetch and display borrowed books for User
-  async function fetchBorrowedBooks(userId) {
-    const API_URL = `/user/borrowed-books?userId=${userId}`;
-    const response = await apiRequest(API_URL, 'GET');
-    const borrowedBookList = document.getElementById('borrowed-book-list');
-    borrowedBookList.innerHTML = '';
-
-    response.forEach(borrowedBook => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-            <td>${borrowedBook.book.title}</td>
-            <td>${borrowedBook.book.author}</td>
-            <td>${borrowedBook.borrowedAt}</td>
-            <td>${borrowedBook.returnedAt || ''}</td>
-        `;
-      borrowedBookList.appendChild(row);
-    });
+  // Reload current tab's data
+  function reloadCurrentTabUser(tabId) {
+    if (tabId === 'available-books') fetchAvailableBooks();
+    if (tabId === 'borrowed-books') fetchBorrowedBooks();
   }
 
-  // Initialize User Page
-  document.addEventListener('DOMContentLoaded', () => {
-    const role = localStorage.getItem('role');
-    const userId = localStorage.getItem('userId'); // Assume userId is stored in LocalStorage after login
+  // Fetch Available Books
+  async function fetchAvailableBooks() {
+    const API_URL = '/user/available-books';
+    const availableBooksList = document.getElementById('available-books-list');
+    availableBooksList.innerHTML = ''; // Clear table rows
 
-    if (role !== 'USER') {
-      alert('Access denied! You are not authorized to view this page.');
-      window.location.href = '/login.html';
-      return;
+    try {
+      const response = await apiRequest(API_URL, 'GET');
+      if (!response || response.length === 0) {
+        availableBooksList.innerHTML = `<tr><td colspan="6">No books available.</td></tr>`;
+        return;
+      }
+
+      response.forEach(book => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+                <td>${book.title}</td>
+                <td>${book.authorName}</td>
+                <td>${book.categoryName}</td>
+                <td>${book.publishedYear || ''}</td>
+                <td>${book.price ? `$${book.price.toFixed(2)}` : ''}</td>
+                <td>${book.availableQuantity}</td>
+            `;
+        availableBooksList.appendChild(row);
+      });
+    } catch (error) {
+      console.error('Error fetching available books:', error);
     }
+  }
 
-    fetchBooksForUser(); // Lấy danh sách sách có sẵn
-    fetchBorrowedBooks(userId); // Lấy danh sách sách đã mượn
-  });
+  // Fetch Borrowed Books
+  async function fetchBorrowedBooks() {
+    const userId = localStorage.getItem('userId'); // Get user ID
+    const API_URL = `/user/borrowed-books/${userId}`;
+    const borrowedBooksList = document.getElementById('borrowed-books-list');
+    borrowedBooksList.innerHTML = ''; // Clear table rows
 
+    try {
+      const response = await apiRequest(API_URL, 'GET');
+      if (!response || response.length === 0) {
+        borrowedBooksList.innerHTML = `<tr><td colspan="3">You have not borrowed any books.</td></tr>`;
+        return;
+      }
+
+      response.forEach(book => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+                <td>${book.bookTitle}</td>
+                <td>${book.borrowDate}</td>
+                <td>${book.returnDate || 'Not Returned'}</td>
+            `;
+        borrowedBooksList.appendChild(row);
+      });
+    } catch (error) {
+      console.error('Error fetching borrowed books:', error);
+    }
+  }
 
 </script>

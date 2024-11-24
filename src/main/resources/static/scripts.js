@@ -19,6 +19,7 @@ async function handleLogin(event) {
             // Lưu token và role vào LocalStorage
             localStorage.setItem('token', data.token);
             localStorage.setItem('role', data.role);
+            localStorage.setItem('userId', data.userId);
 
             // Điều hướng dựa trên role
             if (data.role === 'ADMIN') {
@@ -155,7 +156,7 @@ async function apiRequest(url, method = 'GET', body = null) {
 }
 
 // Show the selected tab and reload its data
-function showTab(tabId) {
+function showTabAdmin(tabId) {
     // Ẩn tất cả các nội dung tab
     const tabs = document.querySelectorAll('.tab-content');
     tabs.forEach(tab => {

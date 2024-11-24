@@ -1,7 +1,6 @@
 package org.example.studentmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.studentmanagement.dto.TokenResponse;
 import org.example.studentmanagement.dto.UserRequest;
 import org.example.studentmanagement.security.JwtTokenUtil;
 import org.example.studentmanagement.service.UserService;
@@ -31,9 +30,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequest userRequest) {
         try {
-            String token = userService.login(userRequest.getUsername(), userRequest.getPassword());
-            String role = jwtTokenUtil.getRoleFromToken(token);
-            return ResponseEntity.ok(new TokenResponse(token, role));
+            return ResponseEntity.ok(userService.login(userRequest.getUsername(), userRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

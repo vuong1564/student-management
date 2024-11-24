@@ -8,4 +8,9 @@ import java.util.List;
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Integer> {
 
     List<BorrowRecord> findByUserId(Integer borrowerId);
+
+    List<BorrowRecord> findByUserIdAndReturnDateIsNull(Integer userId);
+
+    int countByBookIdAndReturnDateIsNull(Integer bookId);
+
 }

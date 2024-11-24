@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class TokenResponse {
     private String token;
     private String role;
+    private Integer userId;
 }
