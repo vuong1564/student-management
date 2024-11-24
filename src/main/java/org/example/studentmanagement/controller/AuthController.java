@@ -20,10 +20,10 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<?> register(@RequestBody UserRequest registrationDTO) {
         try {
-            userService.register(userRequest.getUsername(), userRequest.getPassword());
-            return ResponseEntity.ok("User registered successfully");
+            userService.registerUser(registrationDTO);
+            return ResponseEntity.ok("User registered successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

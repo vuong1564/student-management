@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.studentmanagement.dto.ChangePasswordRequest;
 import org.example.studentmanagement.dto.UpdatePersonalInfoDTO;
+import org.example.studentmanagement.dto.UserRequest;
 import org.example.studentmanagement.model.User;
 import org.example.studentmanagement.repository.UserRepository;
 import org.example.studentmanagement.security.JwtTokenUtil;
@@ -21,14 +22,19 @@ public class UserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public void register(String username, String password) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Username already exists");
+    public void registerUser(UserRequest registrationDTO) {
+        if (userRepository.existsByUsername(registrationDTO.getUsername())) {
+            throw new IllegalArgumentException("Username already exists!");
         }
+
         User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setUsername(registrationDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
+        user.setEmail(registrationDTO.getEmail());
+        user.setFullName(registrationDTO.getFullName());
+        user.setAddress(registrationDTO.getAddress());
         user.setRole(User.Role.USER);
+
         userRepository.save(user);
     }
 

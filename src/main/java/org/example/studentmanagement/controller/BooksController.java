@@ -1,11 +1,7 @@
 package org.example.studentmanagement.controller;
 
-import org.example.studentmanagement.model.Books;
-import org.example.studentmanagement.service.BooksService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin/books")

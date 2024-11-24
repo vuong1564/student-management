@@ -9,8 +9,8 @@ async function handleLogin(event) {
     try {
         const response = await fetch(`${API_AUTH_URL}/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
         });
 
         if (response.ok) {
@@ -40,24 +40,21 @@ async function handleLogin(event) {
 
 async function handleRegister(event) {
     event.preventDefault();
-    const username = document.getElementById('register-username').value;
-    const password = document.getElementById('register-password').value;
-
+    const user = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        email: document.getElementById('email').value,
+        fullName: document.getElementById('fullName').value,
+        address: document.getElementById('address').value,
+    };
     try {
-        const response = await fetch(`${API_AUTH_URL}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+        const response = await apiRequestWithOutToken('/api/auth/register', 'POST', user, 'text');
 
-        if (response.ok) {
-            alert('Registration successful');
-            window.location.href = 'login.html';
-        } else {
-            alert('Registration failed');
-        }
+        alert('Registration successful! Please log in.');
+        window.location.href = 'login.html';
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error during registration:', error);
+        alert('Failed to register. Please try again.');
     }
 }
 
@@ -69,7 +66,7 @@ async function changePassword(event) {
     const oldPassword = document.getElementById('old-password').value;
     const newPassword = document.getElementById('new-password').value;
 
-    const response = await apiRequest(API_URL, 'POST', { oldPassword, newPassword });
+    const response = await apiRequest(API_URL, 'POST', {oldPassword, newPassword});
     alert('Password changed successfully!');
 }
 
@@ -79,7 +76,7 @@ async function updatePersonalInfo() {
     const email = document.getElementById('email').value;
     const address = document.getElementById('address').value;
 
-    const response = await apiRequest(API_URL, 'PUT', { fullName, email, address });
+    const response = await apiRequest(API_URL, 'PUT', {fullName, email, address});
     alert('Personal info updated successfully!');
 }
 
@@ -102,8 +99,24 @@ function handleLogout() {
 }
 
 
-const API_URL_ADMIN = '/admin/books';
-let editingBookId = null;
+async function apiRequestWithOutToken(url, method = 'GET', body = null, responseType = 'json') {
+    const headers = {'Content-Type': 'application/json'};
+    const options = {method, headers};
+    if (body) options.body = JSON.stringify(body);
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    // Trả về dữ liệu theo định dạng yêu cầu
+    if (responseType === 'text') {
+        return await response.text();
+    }
+    return await response.json();
+}
+
 
 // API Helper function
 async function apiRequest(url, method = 'GET', body = null) {
@@ -119,7 +132,7 @@ async function apiRequest(url, method = 'GET', body = null) {
         'Authorization': `Bearer ${token}`
     };
 
-    const options = { method, headers };
+    const options = {method, headers};
     if (body) options.body = JSON.stringify(body);
 
     const response = await fetch(url, options);
