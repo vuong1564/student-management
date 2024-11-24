@@ -27,12 +27,12 @@ public class BooksService {
     public Books updateBook(Integer id, Books updatedBook) {
         String authorName;
         String categoryName;
-        if(updatedBook.getAuthorId() != null) {
+        if (updatedBook.getAuthorId() != null) {
             authorName = authorRepository.findById(updatedBook.getAuthorId()).get().getName();
         } else {
             authorName = null;
         }
-        if(updatedBook.getCategoryId() != null) {
+        if (updatedBook.getCategoryId() != null) {
             categoryName = categoryRepository.findById(updatedBook.getCategoryId()).get().getName();
         } else {
             categoryName = null;

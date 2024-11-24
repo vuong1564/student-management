@@ -1,7 +1,6 @@
 package org.example.studentmanagement.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.studentmanagement.dto.ChangePasswordRequest;
 import org.example.studentmanagement.dto.TokenResponse;
 import org.example.studentmanagement.dto.UserRequest;
 import org.example.studentmanagement.security.JwtTokenUtil;

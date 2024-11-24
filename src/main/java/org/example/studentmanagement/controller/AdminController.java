@@ -1,6 +1,5 @@
 package org.example.studentmanagement.controller;
 
-import org.example.studentmanagement.dto.BorrowerDTO;
 import org.example.studentmanagement.model.Books;
 import org.example.studentmanagement.service.BooksService;
 import org.springframework.http.ResponseEntity;
