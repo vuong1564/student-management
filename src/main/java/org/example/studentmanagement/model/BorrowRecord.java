@@ -19,10 +19,11 @@ public class BorrowRecord {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "book_id", nullable = false)
-    private Books book;
+    @Column(name = "book_id", nullable = false)
+    private Integer bookId;
+
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "borrow_date")
     private LocalDate borrowDate;

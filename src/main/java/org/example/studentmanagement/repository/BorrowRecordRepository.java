@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Integer> {
-    List<BorrowRecord> findByBookId(Integer bookId);
 
-    List<BorrowRecord> findByStatus(String status);
+    List<BorrowRecord> findByUserId(Integer borrowerId);
 }

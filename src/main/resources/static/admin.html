@@ -176,12 +176,9 @@
         <table id="borrowers-table">
             <thead>
             <tr>
-                <th>User ID</th>
-                <th>Name</th>
-                <th>Book Title</th>
-                <th>Borrow Date</th>
-                <th>Return Date</th>
-                <th>Status</th>
+              <th>Borrower Info</th>
+              <th>Borrowed Books</th>
+            </tr>
             </tr>
             </thead>
             <tbody id="borrowers-list"></tbody>
@@ -481,6 +478,60 @@
         document.getElementById('category-id').value = id;
         document.getElementById('category-name').value = name;
         openModal('category-modal');
+    }
+
+</script>
+
+<script>
+    async function fetchBorrowers() {
+        const API_URL = '/admin/borrowers';
+        try {
+            const response = await apiRequest(API_URL, 'GET'); // GET /admin/borrowers trả về BorrowerDTO[]
+            const borrowerList = document.getElementById('borrowers-list');
+            borrowerList.innerHTML = ''; // Clear table rows
+
+            if (!response || response.length === 0) {
+                // Nếu không có dữ liệu, hiển thị thông báo
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td colspan="2" style="text-align: center;">No borrowers found</td>
+            `;
+                borrowerList.appendChild(row);
+                return;
+            }
+
+            response.forEach(borrower => {
+                // Cột 1: Thông tin người mượn
+                const borrowerInfo = `
+                <strong>Name: ${borrower.name}</strong><br>
+                Email: ${borrower.email}
+            `;
+
+                // Cột 2: Danh sách sách đã mượn
+                let borrowedBooks = '';
+                if (borrower.borrowedBooks && borrower.borrowedBooks.length > 0) {
+                    borrowedBooks = borrower.borrowedBooks.map(book => `
+                    <p>
+                        <strong>Book Name: ${book.bookTitle}</strong><br>
+                        Borrowed: ${book.borrowDate} <br>
+                        Returned: ${book.returnDate || 'Not Returned'}
+                    </p>
+                `).join('');
+                } else {
+                    borrowedBooks = '<p>No books borrowed</p>';
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${borrowerInfo}</td>
+                <td>${borrowedBooks}</td>
+            `;
+                borrowerList.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching borrowers:', error);
+            alert('Failed to load borrowers.');
+        }
     }
 
 </script>

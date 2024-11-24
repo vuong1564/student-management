@@ -129,6 +129,13 @@ async function apiRequest(url, method = 'GET', body = null) {
             localStorage.removeItem('token');
             window.location.href = '/';
         }
+        // Kiểm tra mã lỗi
+        if (response.status === 403) {
+            alert('Your session has expired. Please log in again.');
+            localStorage.removeItem('token'); // Xóa token cũ
+            window.location.href = '/'; // Chuyển hướng về Login
+            return;
+        }
         throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
     return response.json();
