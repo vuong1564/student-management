@@ -84,7 +84,21 @@
 </body>
 </html>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
 
+    if (!token || role !== 'USER') {
+      alert('Access denied! You are not authorized to view this page.');
+      window.location.href = '/login.html';
+      return;
+    }
+    reloadCurrentTab();
+  });
+
+</script>
+</script>
 <script>
 
   // Fetch Available Books
