@@ -15,12 +15,12 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-button active" onclick="showTabAdmin('manage-books')">Manage Books</button>
-        <button class="tab-button" onclick="showTabAdmin('manage-authors')">Manage Authors</button>
-        <button class="tab-button" onclick="showTabAdmin('manage-categories')">Manage Categories</button>
-        <button class="tab-button" onclick="showTabAdmin('manage-borrowers')">Manage Borrowers</button>
-        <button class="tab-button" onclick="showTabAdmin('personal-info')">Personal Info</button>
-        <button class="tab-button" onclick="showTabAdmin('change-password')">Change Password</button>
+        <button class="tab-button active" onclick="showTab('manage-books')">Manage Books</button>
+        <button class="tab-button" onclick="showTab('manage-authors')">Manage Authors</button>
+        <button class="tab-button" onclick="showTab('manage-categories')">Manage Categories</button>
+        <button class="tab-button" onclick="showTab('manage-borrowers')">Manage Borrowers</button>
+        <button class="tab-button" onclick="showTab('personal-info')">Personal Info</button>
+        <button class="tab-button" onclick="showTab('change-password')">Change Password</button>
     </div>
 
     <!-- Tab: Manage Books -->
@@ -110,7 +110,7 @@
     <!-- Tab: Manage Authors -->
     <div class="tab-content" id="manage-authors" style="display: none;">
         <h3>Manage Authors</h3>
-        <button class="modal-button" onclick="openModal('author-modal')">Add/Edit Author</button>
+        <button class="modal-button" onclick="openModal('author-modal')">Add Author</button>
         <table id="authors-table">
             <thead>
             <tr>
@@ -127,7 +127,7 @@
     <div class="modal" id="author-modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('author-modal')">&times;</span>
-            <h3>Add/Edit Author</h3>
+            <h3>Add Author</h3>
             <form id="author-form" onsubmit="addOrEditAuthor(event)">
                 <input type="hidden" id="author-id">
                 <div>

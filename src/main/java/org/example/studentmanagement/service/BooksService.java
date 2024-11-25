@@ -3,8 +3,10 @@ package org.example.studentmanagement.service;
 import lombok.RequiredArgsConstructor;
 import org.example.studentmanagement.dto.BookDTO;
 import org.example.studentmanagement.dto.BorrowedBookDTO;
+import org.example.studentmanagement.model.Author;
 import org.example.studentmanagement.model.Books;
 import org.example.studentmanagement.model.BorrowRecord;
+import org.example.studentmanagement.model.Category;
 import org.example.studentmanagement.repository.AuthorRepository;
 import org.example.studentmanagement.repository.BooksRepository;
 import org.example.studentmanagement.repository.BorrowRecordRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +26,27 @@ public class BooksService {
     private final BorrowRecordRepository borrowRecordRepository;
 
     public List<Books> getAllBooks() {
-        return booksRepository.findAll();
+        // Lấy danh sách tất cả các sách
+        List<Books> books = booksRepository.findAll();
+
+        // Cập nhật authorName và categoryName cho sách được chỉ định
+        books.forEach(book -> {
+            String authorName = Optional.ofNullable(book.getAuthorId())
+                    .flatMap(authorId -> authorRepository.findById(authorId))
+                    .map(Author::getName)
+                    .orElse(null);
+
+            String categoryName = Optional.ofNullable(book.getCategoryId())
+                    .flatMap(categoryId -> categoryRepository.findById(categoryId))
+                    .map(Category::getName)
+                    .orElse(null);
+
+            // Cập nhật giá trị vào đối tượng Books
+            book.setAuthorName(authorName);
+            book.setCategoryName(categoryName);
+        });
+
+        return books;
     }
 
     public Books addBook(Books book) {
@@ -31,23 +54,12 @@ public class BooksService {
     }
 
     public Books updateBook(Integer id, Books updatedBook) {
-        String authorName;
-        String categoryName;
-        if (updatedBook.getAuthorId() != null) {
-            authorName = authorRepository.findById(updatedBook.getAuthorId()).get().getName();
-        } else {
-            authorName = null;
-        }
-        if (updatedBook.getCategoryId() != null) {
-            categoryName = categoryRepository.findById(updatedBook.getCategoryId()).get().getName();
-        } else {
-            categoryName = null;
-        }
+
         return booksRepository.findById(id).map(book -> {
             book.setTitle(updatedBook.getTitle());
             book.setPublishedYear(updatedBook.getPublishedYear());
-            book.setAuthorName(authorName);
-            book.setCategoryName(categoryName);
+            book.setAuthorId(updatedBook.getAuthorId());
+            book.setCategoryId(updatedBook.getCategoryId());
             book.setPrice(updatedBook.getPrice());
             book.setQuantity(updatedBook.getQuantity());
             return booksRepository.save(book);

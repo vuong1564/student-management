@@ -94,7 +94,7 @@ function handleLogout() {
     // Xóa token và role khỏi LocalStorage
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-
+    localStorage.removeItem('userId')
     // Điều hướng về trang đăng nhập
     window.location.href = '/login.html';
 }
@@ -156,7 +156,7 @@ async function apiRequest(url, method = 'GET', body = null) {
 }
 
 // Show the selected tab and reload its data
-function showTabAdmin(tabId) {
+function showTab(tabId) {
     // Ẩn tất cả các nội dung tab
     const tabs = document.querySelectorAll('.tab-content');
     tabs.forEach(tab => {
@@ -189,6 +189,8 @@ function reloadCurrentTab(tabId) {
     if (tabId === 'manage-authors') fetchAuthors();
     if (tabId === 'manage-categories') fetchCategories();
     if (tabId === 'manage-borrowers') fetchBorrowers();
+    if (tabId === 'available-books') fetchAvailableBooks();
+    if (tabId === 'borrowed-books') fetchBorrowedBooks();
 }
 
 // Open modal

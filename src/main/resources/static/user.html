@@ -8,12 +8,17 @@
 </head>
 <body>
 <div class="container">
-  <h1>Welcome, User</h1>
+  <div class="header">
+    <h1>Welcome, User</h1>
+    <button class="logout-button" onclick="handleLogout()">Logout</button>
+  </div>
+
   <div class="tab-container">
     <!-- Tab Buttons -->
     <div class="tab-buttons">
-      <button class="tab-button active" onclick="showTabUser('available-books')">Available Books</button>
-      <button class="tab-button" onclick="showTabUser('borrowed-books')">Borrowed Books</button>
+      <button class="tab-button active" onclick="showTab('available-books')">Available Books</button>
+      <button class="tab-button" onclick="showTab('borrowed-books')">Borrowed Books</button>
+      <button class="tab-button" onclick="showTab('edit-profile')">Edit Profile</button>
     </div>
 
     <!-- Tab Content -->
@@ -22,6 +27,7 @@
       <table id="available-books-table">
         <thead>
         <tr>
+          <th>#</th>
           <th>Title</th>
           <th>Author</th>
           <th>Category</th>
@@ -41,6 +47,7 @@
       <table id="borrowed-books-table">
         <thead>
         <tr>
+          <th>#</th>
           <th>Title</th>
           <th>Borrow Date</th>
           <th>Return Date</th>
@@ -51,6 +58,25 @@
         </tbody>
       </table>
     </div>
+
+    <div class="tab-content" id="edit-profile" style="display: none;">
+      <h3>Edit Profile</h3>
+      <form id="edit-profile-form" onsubmit="updatePersonalInfo(event)">
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" required>
+        </div>
+        <div>
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" required>
+        </div>
+        <div>
+          <label for="address">Address</label>
+          <textarea id="address" required></textarea>
+        </div>
+        <button type="submit">Update</button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -58,39 +84,8 @@
 </body>
 </html>
 
+
 <script>
-  // Show Tab Logic
-  function showTabUser(tabId) {
-    // Ẩn tất cả các nội dung tab
-    const tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => {
-      if (tab.id === tabId) {
-        tab.style.display = 'block'; // Hiển thị tab được chọn
-      } else {
-        tab.style.display = 'none'; // Ẩn các tab khác
-      }
-    });
-
-    // Loại bỏ lớp "active" trên tất cả các nút tab
-    const tabButtons = document.querySelectorAll('.tab-button');
-    tabButtons.forEach(button => {
-      button.classList.remove('active');
-    });
-
-    // Thêm lớp "active" vào nút tab hiện tại
-    const currentButton = document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`);
-    if (currentButton) {
-      currentButton.classList.add('active');
-    }
-
-    reloadCurrentTabUser(tabId);
-  }
-
-  // Reload current tab's data
-  function reloadCurrentTabUser(tabId) {
-    if (tabId === 'available-books') fetchAvailableBooks();
-    if (tabId === 'borrowed-books') fetchBorrowedBooks();
-  }
 
   // Fetch Available Books
   async function fetchAvailableBooks() {
