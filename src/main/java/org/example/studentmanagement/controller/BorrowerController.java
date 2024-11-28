@@ -6,10 +6,7 @@ import org.example.studentmanagement.dto.BorrowerDTO;
 import org.example.studentmanagement.service.BooksService;
 import org.example.studentmanagement.service.BorrowerService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +21,13 @@ public class BorrowerController {
     public ResponseEntity<List<BorrowerDTO>> getAllBorrowers() {
         List<BorrowerDTO> borrowers = borrowerService.getAllBorrowers();
         return ResponseEntity.ok(borrowers);
+    }
+
+    // Add a new borrower
+    @PostMapping("/admin/borrowers")
+    public ResponseEntity<String> addBorrower(@RequestBody BorrowerDTO borrowerDTO) {
+        borrowerService.addBorrower(borrowerDTO);
+        return ResponseEntity.ok("Borrower added successfully!");
     }
 
     @GetMapping("/user/borrowed-books/{userId}")

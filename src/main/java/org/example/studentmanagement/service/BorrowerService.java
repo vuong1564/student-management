@@ -3,6 +3,7 @@ package org.example.studentmanagement.service;
 import lombok.RequiredArgsConstructor;
 import org.example.studentmanagement.dto.BorrowedBookDTO;
 import org.example.studentmanagement.dto.BorrowerDTO;
+import org.example.studentmanagement.model.Books;
 import org.example.studentmanagement.model.BorrowRecord;
 import org.example.studentmanagement.model.User;
 import org.example.studentmanagement.repository.BooksRepository;
@@ -10,6 +11,7 @@ import org.example.studentmanagement.repository.BorrowRecordRepository;
 import org.example.studentmanagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,26 @@ public class BorrowerService {
         }
 
         return borrowerDTOs;
+    }
+
+    // Add a new borrower record
+    public void addBorrower(BorrowerDTO borrowerDTO) {
+        User user = userRepository.findById(borrowerDTO.getId()).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Books book = bookRepository.findById(borrowerDTO.getBorrowedBooks().get(0).getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+
+        if (book.getQuantity() <= borrowRecordRepository.countByBookIdAndReturnDateIsNull(book.getId())) {
+            throw new IllegalArgumentException("Book not available for borrowing");
+        }
+
+        BorrowRecord borrowRecord = new BorrowRecord();
+        borrowRecord.setUserId(user.getId());
+        borrowRecord.setBookId(book.getId());
+        borrowRecord.setBorrowDate(LocalDate.now());
+        borrowRecord.setReturnDate(null);
+
+        borrowRecordRepository.save(borrowRecord);
     }
 }
 
