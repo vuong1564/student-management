@@ -371,3 +371,24 @@ body {
 .register-container button:hover {
     background-color: #0056b3;
 }
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.actions .edit-button {
+    background-color: #ffc107;
+    color: white;
+}
+
+.actions .edit-button:hover {
+    background-color: #e0a800;
+}

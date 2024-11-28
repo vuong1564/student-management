@@ -74,5 +74,12 @@ public class BorrowerService {
 
         borrowRecordRepository.save(borrowRecord);
     }
+
+    public void updateReturnDate(Integer borrowRecordId, LocalDate returnDate) {
+        BorrowRecord record = borrowRecordRepository.findById(borrowRecordId)
+                .orElseThrow(() -> new IllegalArgumentException("Borrow record not found"));
+        record.setReturnDate(returnDate);
+        borrowRecordRepository.save(record);
+    }
 }
 

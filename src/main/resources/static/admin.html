@@ -219,6 +219,21 @@
         </div>
     </div>
 
+    <!-- Modal for Editing Return Date -->
+    <div class="modal" id="edit-borrower-modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('edit-borrower-modal')">&times;</span>
+            <h3>Edit Return Date</h3>
+            <form id="edit-borrower-form" onsubmit="updateReturnDate(event)">
+                <input type="hidden" id="edit-borrower-id"> <!-- BorrowRecord ID -->
+                <div>
+                    <label for="edit-return-date">Return Date</label>
+                    <input type="date" id="edit-return-date" required>
+                </div>
+                <button type="submit">Update</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Tab: Personal Info -->
     <div class="tab-content" id="personal-info" style="display: none;">
@@ -550,6 +565,7 @@
                         <strong>Book Name: ${book.bookTitle}</strong><br>
                         Borrowed: ${book.borrowDate} <br>
                         Returned: ${book.returnDate || 'Not Returned'}
+                        <button class="edit-button" onclick="openEditModal(${borrower.id}, '${book.returnDate || ''}')">Edit</button>
                     </p>
                 `).join('');
                 } else {
@@ -560,6 +576,9 @@
                 row.innerHTML = `
                 <td>${borrowerInfo}</td>
                 <td>${borrowedBooks}</td>
+                <td class="actions">
+                    <!-- Action buttons like edit can go here -->
+                </td>
             `;
                 borrowerList.appendChild(row);
             });
@@ -569,9 +588,6 @@
         }
     }
 
-</script>
-
-<script>
     async function fetchBorrowerDropdowns() {
         try {
             // Fetch Users (Role: USER)
@@ -625,5 +641,27 @@
         }
     }
 
+    async function updateReturnDate(event) {
+        event.preventDefault();
 
+        const borrowerId = document.getElementById('edit-borrower-id').value;
+        const returnDate = document.getElementById('edit-return-date').value;
+
+        try {
+            const API_URL = `/admin/borrowers/${borrowerId}/return-date`;
+            await apiRequest(API_URL, 'PUT', {returnDate});
+            alert('Return date updated successfully!');
+            closeModal('edit-borrower-modal');
+            fetchBorrowers(); // Reload Borrowers List
+        } catch (error) {
+            console.error('Error updating return date:', error);
+            alert('Failed to update return date.');
+        }
+    }
+
+    function openEditModal(borrowerId, returnDate) {
+        document.getElementById('edit-borrower-id').value = borrowerId;
+        document.getElementById('edit-return-date').value = returnDate || '';
+        openModal('edit-borrower-modal');
+    }
 </script>

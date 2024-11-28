@@ -9,7 +9,9 @@ import org.example.studentmanagement.service.BorrowerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping()
@@ -30,6 +32,13 @@ public class BorrowerController {
     public ResponseEntity<String> addBorrower(@RequestBody BorrowerDTO borrowerDTO) {
         borrowerService.addBorrower(borrowerDTO);
         return ResponseEntity.ok(gson.toJson("Borrower added successfully!"));
+    }
+
+    @PutMapping("/admin/borrowers/{borrowRecordId}/return-date")
+    public ResponseEntity<String> updateReturnDate(@PathVariable Integer borrowRecordId, @RequestBody Map<String, String> body) {
+        String returnDate = body.get("returnDate");
+        borrowerService.updateReturnDate(borrowRecordId, LocalDate.parse(returnDate));
+        return ResponseEntity.ok(gson.toJson("Return date updated successfully!"));
     }
 
     @GetMapping("/user/borrowed-books/{userId}")
