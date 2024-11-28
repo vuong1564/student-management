@@ -201,6 +201,10 @@ function openModal(modalId) {
     if (modalId === 'book-modal') {
         fetchDropdownOptions();
     }
+
+    if (modalId === 'borrower-modal') {
+        fetchBorrowerDropdowns(); // Load dropdown options
+    }
 }
 
 // Close modal

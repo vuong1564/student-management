@@ -1,5 +1,6 @@
 package org.example.studentmanagement.controller;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.example.studentmanagement.dto.BorrowedBookDTO;
 import org.example.studentmanagement.dto.BorrowerDTO;
@@ -16,6 +17,7 @@ import java.util.List;
 public class BorrowerController {
     private final BorrowerService borrowerService;
     private final BooksService booksService;
+    private final Gson gson;
 
     @GetMapping("/admin/borrowers")
     public ResponseEntity<List<BorrowerDTO>> getAllBorrowers() {
@@ -27,7 +29,7 @@ public class BorrowerController {
     @PostMapping("/admin/borrowers")
     public ResponseEntity<String> addBorrower(@RequestBody BorrowerDTO borrowerDTO) {
         borrowerService.addBorrower(borrowerDTO);
-        return ResponseEntity.ok("Borrower added successfully!");
+        return ResponseEntity.ok(gson.toJson("Borrower added successfully!"));
     }
 
     @GetMapping("/user/borrowed-books/{userId}")

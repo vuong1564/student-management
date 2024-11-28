@@ -174,17 +174,51 @@
     <!-- Tab: Manage Borrowers -->
     <div class="tab-content" id="manage-borrowers" style="display: none;">
         <h3>Manage Borrowers</h3>
+        <button class="modal-button" onclick="openModal('borrower-modal')">Add Borrower</button>
+
         <table id="borrowers-table">
             <thead>
             <tr>
-              <th>Borrower Info</th>
-              <th>Borrowed Books</th>
-            </tr>
+                <th>Borrower Info</th>
+                <th>Borrowed Books</th>
             </tr>
             </thead>
-            <tbody id="borrowers-list"></tbody>
+            <tbody id="borrowers-list">
+            <!-- Rows populated dynamically -->
+            </tbody>
         </table>
     </div>
+
+    <!-- Modal for Adding Borrower -->
+    <div class="modal" id="borrower-modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('borrower-modal')">&times;</span>
+            <h3>Add Borrower</h3>
+            <form id="borrower-form" onsubmit="addBorrower(event)">
+                <div>
+                    <label for="borrower-user">Select User</label>
+                    <select id="borrower-user" required>
+                        <option value="" disabled selected>Select a User</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="borrower-book">Select Book</label>
+                    <select id="borrower-book" required>
+                        <option value="" disabled selected>Select a Book</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="borrow-date">Borrow Date</label>
+                    <input type="date" id="borrow-date" required>
+                </div>
+
+                <button type="submit">Add Borrower</button>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Tab: Personal Info -->
     <div class="tab-content" id="personal-info" style="display: none;">
@@ -534,5 +568,62 @@
             alert('Failed to load borrowers.');
         }
     }
+
+</script>
+
+<script>
+    async function fetchBorrowerDropdowns() {
+        try {
+            // Fetch Users (Role: USER)
+            const usersResponse = await apiRequest('/admin/users', 'GET');
+            const userSelect = document.getElementById('borrower-user');
+            userSelect.innerHTML = '<option value="" disabled selected>Select a User</option>';
+            usersResponse.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = `${user.username}`;
+                userSelect.appendChild(option);
+            });
+
+            // Fetch Available Books
+            const booksResponse = await apiRequest('/admin/books', 'GET');
+            const bookSelect = document.getElementById('borrower-book');
+            bookSelect.innerHTML = '<option value="" disabled selected>Select a Book</option>';
+            booksResponse.forEach(book => {
+                const option = document.createElement('option');
+                option.value = book.id;
+                option.textContent = `${book.title}`;
+                bookSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching dropdown options:', error);
+            alert('Failed to load dropdown options.');
+        }
+    }
+
+    async function addBorrower(event) {
+        event.preventDefault();
+
+        const borrower = {
+            id: document.getElementById('borrower-user').value, // User ID
+            borrowedBooks: [
+                {
+                    bookId: document.getElementById('borrower-book').value // Book ID
+                }
+            ],
+            borrowDate: document.getElementById('borrow-date').value
+        };
+
+        try {
+            await apiRequest('/admin/borrowers', 'POST', borrower);
+            alert('Borrower added successfully!');
+            closeModal('borrower-modal');
+            fetchBorrowers(); // Reload danh sách người mượn
+        } catch (error) {
+            console.error('Error adding borrower:', error);
+            alert('Failed to add borrower.');
+        }
+    }
+
 
 </script>

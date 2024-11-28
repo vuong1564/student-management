@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping()
 public class UserController {
 
     private final BooksService booksService;
@@ -24,7 +24,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/books")
+    @GetMapping("/user/books")
     public ResponseEntity<List<Books>> getAllBooks() {
         return ResponseEntity.ok(booksService.getAllBooks());
     }
@@ -32,7 +32,7 @@ public class UserController {
     private final UserService userService;
 
     // Update Personal Information
-    @PutMapping("/personal-info")
+    @PutMapping("/user/personal-info")
     public ResponseEntity<User> updatePersonalInfo(Authentication authentication,
                                                    @RequestBody UpdatePersonalInfoDTO dto) {
         Integer userId = getUserIdFromAuthentication(authentication);
@@ -41,7 +41,7 @@ public class UserController {
     }
 
     // Change Password
-    @PostMapping("/change-password")
+    @PostMapping("/user/change-password")
     public ResponseEntity<String> changePassword(Authentication authentication,
                                                  @RequestBody ChangePasswordRequest dto) {
         Integer userId = getUserIdFromAuthentication(authentication);
@@ -55,9 +55,15 @@ public class UserController {
         return (Integer) authentication.getPrincipal();
     }
 
-    @GetMapping("/available-books")
+    @GetMapping("/user/available-books")
     public ResponseEntity<List<BookDTO>> getAvailableBooks() {
         List<BookDTO> availableBooks = booksService.getAvailableBooks();
         return ResponseEntity.ok(availableBooks);
+    }
+
+    @GetMapping("/admin/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsersWithRole(User.Role.USER);
+        return ResponseEntity.ok(users);
     }
 }
