@@ -1,5 +1,6 @@
 package org.example.studentmanagement.controller;
 
+import com.google.gson.Gson;
 import org.example.studentmanagement.model.Books;
 import org.example.studentmanagement.service.BooksService;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,6 @@ public class AdminController {
     @DeleteMapping("/books/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Integer id) {
         booksService.deleteBook(id);
-        return ResponseEntity.ok("Book deleted successfully");
+        return ResponseEntity.ok(new Gson().toJson("Book deleted successfully"));
     }
 }

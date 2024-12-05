@@ -1,5 +1,6 @@
 package org.example.studentmanagement.controller;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.example.studentmanagement.dto.UserRequest;
 import org.example.studentmanagement.security.JwtTokenUtil;
@@ -21,7 +22,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody UserRequest registrationDTO) {
         try {
             userService.registerUser(registrationDTO);
-            return ResponseEntity.ok("User registered successfully!");
+            return ResponseEntity.ok(new Gson().toJson("User registered successfully!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

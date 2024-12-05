@@ -1,5 +1,6 @@
 package org.example.studentmanagement.controller;
 
+import com.google.gson.Gson;
 import org.example.studentmanagement.dto.BookDTO;
 import org.example.studentmanagement.dto.ChangePasswordRequest;
 import org.example.studentmanagement.dto.UpdatePersonalInfoDTO;
@@ -46,7 +47,7 @@ public class UserController {
                                                  @RequestBody ChangePasswordRequest dto) {
         Integer userId = getUserIdFromAuthentication(authentication);
         userService.changePassword(userId, dto);
-        return ResponseEntity.ok("Password changed successfully");
+        return ResponseEntity.ok(new Gson().toJson("Password changed successfully"));
     }
 
     // Extract User ID from Authentication
